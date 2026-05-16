@@ -12,42 +12,57 @@ from telegram.error import TelegramError
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
+# ===== КЛЮЧОВІ СЛОВА (додаткова перевірка для не-категорійних джерел) =====
 KEYWORDS = [
-    "сайт", "лендінг", "лендинг", "посадкова", "посадочна",
+    "сайт", "лендінг", "лендинг", "посадкова сторінка", "посадочная страница",
     "розробка сайту", "зробити сайт", "потрібен сайт", "потрібний сайт",
     "інтернет магазин", "інтернет-магазин", "онлайн магазин",
-    "wordpress", "вордпрес", "tilda", "тільда",
+    "wordpress", "вордпрес", "tilda", "тільда", "webflow", "вебфлоу",
     "сделать сайт", "нужен сайт", "разработка сайта",
     "таргет", "таргетолог", "таргетована реклама", "налаштування реклами",
     "реклама facebook", "реклама instagram", "реклама фейсбук",
     "просування", "таргетированная реклама", "настройка рекламы",
-    "розсилка", "email розсилка", "tg розсилка", "рассылка", "email рассылка",
-    "дизайн сайту", "дизайн сайта", "веб дизайн", "ui дизайн",
+    # Розсилки
+    "розсилка", "розсилання", "масова розсилка",
+    "рассылка", "массовая рассылка",
+    "email розсилка", "email рассылка", "email маркетинг",
+    "telegram розсилка", "розсилка telegram", "розсилка телеграм",
+    "tg розсилка", "telegram рассылка", "рассылка телеграм",
+    "viber розсилка", "viber рассылка",
+    "sms розсилка", "sms рассылка",
+    "newsletter",
+    # Дизайн
+    "дизайн сайту", "дизайн сайта", "веб дизайн", "ui дизайн", "ux дизайн",
     "логотип", "брендинг", "фірмовий стиль", "фирменный стиль",
     "банер", "баннер", "креатив", "крео",
+    # SMM
     "smm", "ведення соцмереж", "ведение соцсетей", "контент план",
+    "instagram ведення", "facebook ведення",
+    # Міжнародні
     "landing page", "web design", "website", "web developer",
     "facebook ads", "instagram ads", "google ads", "email marketing",
     "smm manager", "graphic design", "logo design", "branding",
-    "потрібно", "потрібен", "потрібна", "шукаю", "замовити",
-    "looking for", "need a", "need someone", "hire", "project",
-    "нужен", "ищу", "требуется",
+    "telegram bot", "chatbot", "чат-бот",
+    # Маркери замовлення
+    "потрібно", "потрібен", "потрібна", "шукаю виконавця", "замовити",
+    "потрібен спеціаліст", "шукаю підрядника",
+    "looking for", "need a", "need someone", "project",
+    "нужен", "ищу исполнителя", "ищу подрядчика", "требуется",
 ]
 
+# ===== СТОП-СЛОВА (вакансії, пропозиції послуг) =====
 STOP_WORDS = [
-    "$/hour", "$/hr", "/hour", "per hour", "hourly",
-    "грн/год", "$/час", "uah/hour",
-    "full-time", "fulltime", "full time",
-    "part-time", "parttime", "part time",
+    "$/hour", "$/hr", "per hour", "hourly", "грн/год", "$/час",
+    "full-time", "fulltime", "full time", "part-time", "parttime",
     "permanent", "employee", "employment",
     "join our team", "join our company",
-    "we are hiring", "we're hiring", "we are looking for a",
+    "we are hiring", "we're hiring",
     "vacancy", "вакансія", "вакансия",
     "salary", "зарплата", "оклад", "ставка",
     "i offer", "i provide", "i am offering", "my services",
-    "hire me", "check my portfolio", "i can help you",
+    "hire me", "check my portfolio",
     "пропоную послуги", "надаю послуги", "мої послуги",
-    "предлагаю услуги", "мои услуги",
+    "предлагаю услуги", "мои услуги", "предлагаю свои",
     "займ", "кредит", "казино", "ставки",
 ]
 
@@ -143,27 +158,30 @@ def parse_rss(source, url):
 
 def parse_freelance_ua():
     """
-    Парсер freelance.ua - UA фріланс біржа
-    Категорії: сайти, дизайн, SMM, маркетинг, реклама, email
-    Spec IDs:
-      132 - Сайт под ключ
-      131 - Интернет-магазины
-      130 - Доработка сайтов
-      129 - Верстка
-      52  - Дизайн сайта
-      58  - Логотипы
-      136 - SMM (Продвижение в соцсетях)
-      175 - Интернет-маркетинг
-      176 - Email-маркетинг
-      96  - Контекстная реклама
-      114 - Веб-программирование
-      49  - Баннеры
+    freelance.ua - всі цільові категорії:
+    Веб: 132(сайт під ключ), 131(інтернет-магазини), 130(доробка), 129(верстка),
+         128(мобільні версії), 114(веб-програмування)
+    Дизайн: 52(дизайн сайту), 58(логотипи), 65(фірмовий стиль), 49(банери),
+             55(дизайн інтерфейсу), 51(дизайн інтерфейсів додатків)
+    Реклама/Маркетинг: 136(SMM), 175(інтернет-маркетинг), 176(email-маркетинг),
+                       96(контекстна реклама), 98(SEO просування), 177(SEO аудит),
+                       145(рекламні концепції), 144(CPA)
+    Контент: 151(контент-менеджер), 152(копірайтинг)
     """
     source = "freelance.ua"
     seen = load_seen_ids()
 
-    # Формуємо URL з фільтром по потрібних категоріях
-    spec_ids = [132, 131, 130, 129, 52, 58, 136, 175, 176, 96, 114, 49]
+    spec_ids = [
+        # Веб-розробка
+        132, 131, 130, 129, 128, 114,
+        # Дизайн
+        52, 58, 65, 49, 55, 51, 86,
+        # SMM та маркетинг
+        136, 175, 176, 96, 98, 177, 145, 144,
+        # Контент
+        151, 152,
+    ]
+
     params = "&".join([f"specs[]={sid}" for sid in spec_ids])
     url = f"https://freelance.ua/ru/orders/?{params}"
 
@@ -177,11 +195,11 @@ def parse_freelance_ua():
         orders = soup.find_all(class_="j-order")
 
         if not orders:
-            logger.warning(f"{source}: no orders found on page")
+            logger.warning(f"{source}: no orders found")
             return
 
-        for order in orders[:30]:
-            # Заголовок та посилання
+        new_count = 0
+        for order in orders[:40]:
             title_el = order.find(class_="l-project-title")
             if not title_el:
                 continue
@@ -194,13 +212,11 @@ def parse_freelance_ua():
             if not link.startswith("http"):
                 link = "https://freelance.ua" + link
 
-            # Опис
             desc_el = order.find(class_="l-project-description")
             if not desc_el:
                 desc_el = order.find("p")
             desc = desc_el.get_text(strip=True) if desc_el else ""
 
-            # Теги
             tags_els = order.find_all(class_=lambda c: c and "tag" in c.lower())
             tags = " ".join([t.get_text(strip=True) for t in tags_els])
 
@@ -209,15 +225,50 @@ def parse_freelance_ua():
                 continue
 
             full_text = title + " " + desc + " " + tags
-            # freelance.ua вже відфільтрований по категоріях - беремо всі замовлення
-            # але все одно перевіряємо стоп-слова (вакансії "в компанію")
+            # Фільтруємо тільки вакансії "В компанію"
             if not is_spam(full_text):
                 msg_text = desc if desc else tags
                 send_to_telegram(format_message(source, title, msg_text, link))
                 save_seen_id(uid)
+                new_count += 1
                 time.sleep(2)
 
-        logger.info(f"{source}: OK, found {len(orders)} orders")
+        logger.info(f"{source}: OK, {len(orders)} orders, {new_count} new")
+    except Exception as e:
+        logger.error(f"{source} error: {e}")
+
+def parse_freelance_ua_keyword(keyword, label):
+    """Пошук по ключовому слову на freelance.ua (для webflow, розсилки і т.д.)"""
+    source = f"freelance.ua [{label}]"
+    seen = load_seen_ids()
+    url = f"https://freelance.ua/ru/orders/?q={requests.utils.quote(keyword)}"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=20)
+        if resp.status_code != 200:
+            return
+        soup = BeautifulSoup(resp.text, "html.parser")
+        orders = soup.find_all(class_="j-order")
+        for order in orders[:20]:
+            title_el = order.find(class_="l-project-title")
+            if not title_el:
+                continue
+            link_el = title_el.find("a")
+            if not link_el:
+                continue
+            title = link_el.get_text(strip=True)
+            link = link_el.get("href", "")
+            if not link.startswith("http"):
+                link = "https://freelance.ua" + link
+            desc_el = order.find(class_="l-project-description") or order.find("p")
+            desc = desc_el.get_text(strip=True) if desc_el else ""
+            uid = make_id(link or title)
+            if uid in seen:
+                continue
+            if not is_spam(title + " " + desc):
+                send_to_telegram(format_message(source, title, desc, link))
+                save_seen_id(uid)
+                time.sleep(2)
+        logger.info(f"{source}: OK")
     except Exception as e:
         logger.error(f"{source} error: {e}")
 
@@ -253,7 +304,7 @@ def parse_telegram_channels():
                             post_link = date_links[real_i].get("href", post_link)
                     except:
                         pass
-                    send_to_telegram(format_message(f"Telegram @{channel}", text[:100], text, post_link))
+                    send_to_telegram(format_message(f"TG @{channel}", text[:100], text, post_link))
                     save_seen_id(uid)
                     time.sleep(2)
             logger.info(f"TG @{channel}: OK")
@@ -265,10 +316,27 @@ def run_all_parsers():
     logger.info("=" * 50)
     logger.info("Start parsing...")
 
-    # ===== УКРАЇНА =====
-    parse_freelance_ua()   # Головний UA джерело - з фільтром по категоріях
+    # ===== FREELANCE.UA - основне UA джерело =====
+    parse_freelance_ua()  # По категоріях (веб, дизайн, SMM, маркетинг)
+
+    # Додаткові пошуки по ключових словах яких немає в категоріях
+    time.sleep(3)
+    parse_freelance_ua_keyword("webflow", "Webflow")
+    time.sleep(2)
+    parse_freelance_ua_keyword("розсилка телеграм", "TG розсилка")
+    time.sleep(2)
+    parse_freelance_ua_keyword("розсилка viber", "Viber розсилка")
+    time.sleep(2)
+    parse_freelance_ua_keyword("розсилка email", "Email розсилка")
+    time.sleep(2)
+    parse_freelance_ua_keyword("telegram бот", "Telegram бот")
+    time.sleep(2)
+    parse_freelance_ua_keyword("чат-бот", "Чат-бот")
+    time.sleep(2)
+
+    # ===== ІНШІ UA ДЖЕРЕЛА =====
     parse_rss("FreelanceHunt", "https://freelancehunt.com/projects/feed")
-    parse_rss("Kabanchik UA", "https://kabanchik.ua/ua/tasks/feed")
+    parse_rss("Kabanchik", "https://kabanchik.ua/ua/tasks/feed")
     parse_rss("Weblancer", "https://www.weblancer.net/jobs/feed/rss/")
 
     # ===== ЄВРОПА / МІЖНАРОДНІ =====
@@ -283,8 +351,10 @@ def run_all_parsers():
     parse_rss("Upwork design", "https://www.upwork.com/ab/feed/jobs/rss?q=web+design+logo&sort=recency")
     parse_rss("Upwork ads", "https://www.upwork.com/ab/feed/jobs/rss?q=facebook+instagram+ads&sort=recency")
     parse_rss("Upwork email", "https://www.upwork.com/ab/feed/jobs/rss?q=email+marketing&sort=recency")
+    parse_rss("Upwork webflow", "https://www.upwork.com/ab/feed/jobs/rss?q=webflow&sort=recency")
+    parse_rss("Upwork telegram bot", "https://www.upwork.com/ab/feed/jobs/rss?q=telegram+bot&sort=recency")
 
-    # ===== TELEGRAM =====
+    # ===== TELEGRAM КАНАЛИ =====
     parse_telegram_channels()
 
     logger.info("Parsing done.")
