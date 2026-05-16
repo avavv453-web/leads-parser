@@ -12,54 +12,59 @@ from telegram.error import TelegramError
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
-# Ключевые слова - ЧТО ищем (наши услуги)
 KEYWORDS = [
-    # Веб-разработка
-    "сайт", "лендинг", "landing", "website", "веб", "web",
-    "розробка сайту", "зробити сайт", "потрібен сайт",
-    "інтернет магазин", "інтернет-магазин",
-    "wordpress", "вордпрес", "tilda", "тільда",
-    "розробка сайта", "сделать сайт", "нужен сайт",
-    # Таргет / реклама
-    "таргет", "таргетолог", "таргетована реклама", "таргетированная реклама",
-    "реклама facebook", "реклама instagram",
-    "налаштування реклами", "настройка рекламы",
-    "smm", "просування", "продвижение",
-    "facebook ads", "instagram ads", "google ads",
-    # Рассылки
-    "розсилка", "рассылка", "email розсилка", "email рассылка",
-    "telegram розсилка", "newsletter",
-    # Дизайн / крео
-    "дизайн", "банер", "баннер", "креатив", "graphic design",
-    "логотип", "брендинг",
-    # Международные
-    "web developer", "web design", "frontend", "backend",
-    "email marketing", "smm manager", "content creator",
-    # Маркеры заказа
-    "потрібен", "потрібно", "шукаю", "замовити", "замовлення",
-    "ищу исполнителя", "ищу подрядчика", "нужен фрилансер",
-    "looking for", "need a", "hiring freelancer", "freelance project",
-    "need developer", "need designer",
+    # Веб-розробка (UA)
+    "сайт", "лендінг", "лендинг", "посадкова", "посадочна",
+    "розробка сайту", "зробити сайт", "потрібен сайт", "потрібний сайт",
+    "інтернет магазин", "інтернет-магазин", "онлайн магазин",
+    "wordpress", "вордпрес", "tilda", "тільда", "тільда",
+    # Веб-разработка (RU)
+    "сделать сайт", "нужен сайт", "разработка сайта", "интернет магазин",
+    # Таргет / реклама (UA)
+    "таргет", "таргетолог", "таргетована реклама", "налаштування реклами",
+    "реклама facebook", "реклама instagram", "реклама фейсбук",
+    "просування", "просування сайту",
+    # Таргет / реклама (RU)
+    "таргетированная реклама", "настройка рекламы", "реклама вконтакте",
+    "продвижение",
+    # Розсилки
+    "розсилка", "email розсилка", "tg розсилка", "розсилка telegram",
+    "рассылка", "email рассылка",
+    # Дизайн
+    "дизайн сайту", "дизайн сайта", "веб дизайн", "ui дизайн",
+    "логотип", "брендинг", "фірмовий стиль", "фирменный стиль",
+    "банер", "баннер", "креатив", "крео",
+    # SMM
+    "smm", "ведення соцмереж", "ведение соцсетей", "контент план",
+    # English
+    "landing page", "web design", "website", "web developer",
+    "facebook ads", "instagram ads", "google ads", "email marketing",
+    "smm manager", "graphic design", "logo design", "branding",
+    # Маркери замовлення
+    "потрібно", "потрібен", "потрібна", "шукаю", "замовити",
+    "looking for", "need a", "need someone", "hire", "project",
+    "нужен", "ищу", "требуется",
 ]
 
-# Стоп-слова - фильтруем ВАКАНСИИ и предложения работы
 STOP_WORDS = [
-    # Признаки вакансии (работа за зарплату/час)
-    "$/hour", "$/hr", "per hour", "hourly rate", "hourly pay",
-    "€/hour", "€/hr", "грн/год", "грн/час", "$/час",
-    "full-time", "full time", "part-time", "part time",
-    "remote job", "remote position", "job opening", "job opportunity",
-    "we are hiring", "we're hiring", "join our team", "join our company",
-    "vacancy", "vacancies", "вакансія", "вакансия",
-    "permanent position", "long-term employee", "staff position",
-    "salary", "зарплата", "зарплата від", "оклад",
-    "employment", "employed", "employee benefits",
-    "work from home job", "wfh position",
-    # Предложения услуг (не заказы, а сами предлагают)
-    "i offer", "i provide", "i can help", "i am available",
-    "my services", "hire me", "check my portfolio",
+    # Вакансії з погодинною оплатою
+    "$/hour", "$/hr", "/hour", "per hour", "hourly",
+    "грн/год", "$/час", "uah/hour",
+    # Вакансії на постійну роботу
+    "full-time", "fulltime", "full time",
+    "part-time", "parttime", "part time",
+    "permanent", "employee", "employment",
+    "join our team", "join our company",
+    "we are hiring", "we're hiring", "we are looking for a",
+    "vacancy", "вакансія", "вакансия",
+    "salary", "зарплата", "оклад", "ставка",
+    # Пропозиції послуг (не замовлення)
+    "i offer", "i provide", "i am offering", "my services",
+    "hire me", "check my portfolio", "i can help you",
     "пропоную послуги", "надаю послуги", "мої послуги",
     "предлагаю услуги", "мои услуги",
+    # Мусор
+    "займ", "кредит", "казино", "ставки", "заробіток без",
 ]
 
 SEEN_IDS_FILE = "seen_ids.txt"
@@ -67,8 +72,7 @@ CHECK_INTERVAL_MINUTES = 15
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
-
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
 def load_seen_ids():
     if not os.path.exists(SEEN_IDS_FILE):
@@ -84,33 +88,35 @@ def make_id(text):
     return hashlib.md5(text.encode()).hexdigest()
 
 def contains_keyword(text):
-    text_lower = text.lower()
-    return any(kw.lower() in text_lower for kw in KEYWORDS)
+    t = text.lower()
+    return any(kw.lower() in t for kw in KEYWORDS)
 
 def is_spam(text):
-    """Возвращает True если это вакансия или предложение услуг, а не заказ"""
-    text_lower = text.lower()
-    return any(sw.lower() in text_lower for sw in STOP_WORDS)
+    t = text.lower()
+    return any(sw.lower() in t for sw in STOP_WORDS)
 
 def send_to_telegram(message):
     try:
         bot = Bot(token=TELEGRAM_BOT_TOKEN)
-        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message, parse_mode="HTML", disable_web_page_preview=True)
+        bot.send_message(
+            chat_id=TELEGRAM_CHAT_ID,
+            text=message,
+            parse_mode="HTML",
+            disable_web_page_preview=True
+        )
         logger.info("Отправлено в Telegram")
-    except TelegramError as e:
-        logger.error(f"Ошибка Telegram: {e}")
     except Exception as e:
         logger.error(f"Ошибка отправки: {e}")
 
 def format_message(source, title, description, link):
-    msg = f"🔔 <b>Новый запрос [{source}]</b>\n\n"
-    msg += f"📌 <b>{title[:200]}</b>\n\n"
-    if description:
-        desc = description[:500]
-        if len(description) > 500:
+    msg = f"\U0001f514 <b>Новий запит [{source}]</b>\n\n"
+    msg += f"\U0001f4cc <b>{title[:200]}</b>\n\n"
+    if description and description.strip():
+        desc = description.strip()[:500]
+        if len(description.strip()) > 500:
             desc += "..."
         msg += f"{desc}\n\n"
-    msg += f"🔗 <a href=\'{link}\'>Открыть</a>"
+    msg += f"\U0001f517 <a href='{link}'>Відкрити</a>"
     return msg
 
 def parse_rss(source, url):
@@ -121,20 +127,21 @@ def parse_rss(source, url):
             logger.warning(f"{source}: статус {resp.status_code}")
             return
         root = ET.fromstring(resp.content)
-        ns = {'atom': 'http://www.w3.org/2005/Atom'}
         items = root.findall('.//item')
         if not items:
+            ns = {'atom': 'http://www.w3.org/2005/Atom'}
             items = root.findall('.//atom:entry', ns)
-        for item in items[:20]:
+        for item in items[:30]:
             title_el = item.find('title')
             link_el = item.find('link')
             desc_el = item.find('description') or item.find('summary')
             if title_el is None:
                 continue
-            title = title_el.text or ""
-            link = link_el.text if link_el is not None and link_el.text else ""
-            if not link and link_el is not None:
-                link = link_el.get('href', '')
+            title = (title_el.text or "").strip()
+            link = ""
+            if link_el is not None:
+                link = link_el.text or link_el.get('href', '')
+            link = (link or "").strip()
             desc = ""
             if desc_el is not None and desc_el.text:
                 desc = BeautifulSoup(desc_el.text, "html.parser").get_text()
@@ -146,53 +153,17 @@ def parse_rss(source, url):
                 send_to_telegram(format_message(source, title, desc, link))
                 save_seen_id(uid)
                 time.sleep(2)
-        logger.info(f"{source}: проверено")
+        logger.info(f"{source}: OK")
     except Exception as e:
-        logger.error(f"{source} ошибка: {e}")
-
-def parse_reddit():
-    # Только нерусские сабреддиты
-    subreddits = ["forhire", "slavelabour", "ukraineforhire", "hiring", "freelance", "entrepreneur"]
-    seen = load_seen_ids()
-    for sub in subreddits:
-        try:
-            url = f"https://www.reddit.com/r/{sub}/new.json?limit=25"
-            resp = requests.get(url, headers={**HEADERS, "User-Agent": "LeadParserBot/1.0"}, timeout=15)
-            if resp.status_code != 200:
-                time.sleep(3)
-                continue
-            posts = resp.json().get("data", {}).get("children", [])
-            for post in posts:
-                d = post.get("data", {})
-                uid = d.get("id", "")
-                if uid in seen:
-                    continue
-                title = d.get("title", "")
-                desc = d.get("selftext", "")
-                link = "https://reddit.com" + d.get("permalink", "")
-                full_text = title + " " + desc
-                if contains_keyword(full_text) and not is_spam(full_text):
-                    send_to_telegram(format_message(f"Reddit r/{sub}", title, desc, link))
-                    save_seen_id(uid)
-                    time.sleep(2)
-            logger.info(f"Reddit r/{sub}: проверено")
-            time.sleep(3)
-        except Exception as e:
-            logger.error(f"Reddit r/{sub} ошибка: {e}")
+        logger.error(f"{source} error: {e}")
 
 def parse_telegram_channels():
-    # Публичные украинские и европейские каналы с заказами
+    # Перевірені активні канали з реальними замовленнями
     channels = [
-        "freelance_ua",
-        "freelance_jobs_ua",
-        "tenders_ua",
-        "web_freelance",
-        "it_jobs_ukraine",
-        "smm_freelance",
-        "freelance_europe",
-        "freelancers_chat",
-        "prjctr_jobs",
-        "digital_freelance_ua",
+        "ukr_freelance_jobs",   # Проекти з freelancer.com + UA замовлення
+        "freelance_ukraine",     # UA фріланс замовлення
+        "zamovlennya_ua",        # Замовлення UA
+        "freelance_jobs_ua",     # UA проекти
     ]
     seen = load_seen_ids()
     for channel in channels:
@@ -200,60 +171,68 @@ def parse_telegram_channels():
             url = f"https://t.me/s/{channel}"
             resp = requests.get(url, headers=HEADERS, timeout=15)
             if resp.status_code != 200:
+                logger.warning(f"TG @{channel}: {resp.status_code}")
                 continue
             soup = BeautifulSoup(resp.text, "html.parser")
             messages = soup.find_all("div", class_="tgme_widget_message_text")
-            links_els = soup.find_all("a", class_="tgme_widget_message_date")
-            for i, msg in enumerate(messages[-20:]):
-                text = msg.get_text()
-                uid = make_id(channel + text[:100])
+            date_links = soup.find_all("a", class_="tgme_widget_message_date")
+            for i, msg_el in enumerate(messages[-25:]):
+                text = msg_el.get_text(separator=" ").strip()
+                if len(text) < 20:
+                    continue
+                uid = make_id(channel + text[:120])
                 if uid in seen:
                     continue
                 if contains_keyword(text) and not is_spam(text):
-                    post_link = ""
+                    post_link = f"https://t.me/{channel}"
                     try:
-                        post_link = links_els[i].get("href", f"https://t.me/{channel}")
+                        real_i = len(messages) - 25 + i
+                        if real_i >= 0 and real_i < len(date_links):
+                            post_link = date_links[real_i].get("href", post_link)
                     except:
-                        post_link = f"https://t.me/{channel}"
-                    send_to_telegram(format_message(f"Telegram @{channel}", text[:100], text, post_link))
+                        pass
+                    send_to_telegram(format_message(
+                        f"Telegram @{channel}",
+                        text[:100],
+                        text,
+                        post_link
+                    ))
                     save_seen_id(uid)
                     time.sleep(2)
-            logger.info(f"Telegram @{channel}: проверено")
-            time.sleep(2)
+            logger.info(f"TG @{channel}: OK")
+            time.sleep(3)
         except Exception as e:
-            logger.error(f"Telegram @{channel} ошибка: {e}")
+            logger.error(f"TG @{channel} error: {e}")
 
 def run_all_parsers():
     logger.info("=" * 50)
-    logger.info("Запуск парсинга всех источников...")
+    logger.info("Старт парсингу...")
 
-    # Украина
-    parse_rss("FreelanceHunt UA", "https://freelancehunt.com/projects/feed")
-    parse_rss("Kabanchik UA", "https://kabanchik.ua/ua/news/feed")
+    # ===== УКРАЇНА =====
+    parse_rss("FreelanceHunt", "https://freelancehunt.com/projects/feed")
+    parse_rss("Kabanchik UA", "https://kabanchik.ua/ua/tasks/feed")
     parse_rss("Weblancer", "https://www.weblancer.net/jobs/feed/rss/")
 
-    # Европа / Международные (без аккаунта)
+    # ===== ЄВРОПА / МІЖНАРОДНІ =====
     parse_rss("PeoplePerHour", "https://www.peopleperhour.com/job-feed/rss")
-    parse_rss("Freelancer.com Web", "https://www.freelancer.com/rss/category/3.xml")
-    parse_rss("Freelancer.com Design", "https://www.freelancer.com/rss/category/4.xml")
-    parse_rss("Freelancer.com Marketing", "https://www.freelancer.com/rss/category/7.xml")
+    parse_rss("Freelancer Web", "https://www.freelancer.com/rss/category/3.xml")
+    parse_rss("Freelancer Design", "https://www.freelancer.com/rss/category/4.xml")
+    parse_rss("Freelancer Marketing", "https://www.freelancer.com/rss/category/7.xml")
     parse_rss("Guru.com", "https://www.guru.com/jobs/feed.aspx")
-    parse_rss("Upwork web", "https://www.upwork.com/ab/feed/jobs/rss?q=web+development&sort=recency")
-    parse_rss("Upwork smm", "https://www.upwork.com/ab/feed/jobs/rss?q=smm&sort=recency")
-    parse_rss("Upwork ads", "https://www.upwork.com/ab/feed/jobs/rss?q=facebook+ads&sort=recency")
+    parse_rss("Upwork webdev", "https://www.upwork.com/ab/feed/jobs/rss?q=web+development&sort=recency&location=ukraine,poland,germany,netherlands")
     parse_rss("Upwork landing", "https://www.upwork.com/ab/feed/jobs/rss?q=landing+page&sort=recency")
-    parse_rss("Upwork email", "https://www.upwork.com/ab/feed/jobs/rss?q=email+marketing&sort=recency")
+    parse_rss("Upwork smm", "https://www.upwork.com/ab/feed/jobs/rss?q=smm+social+media&sort=recency")
+    parse_rss("Upwork design", "https://www.upwork.com/ab/feed/jobs/rss?q=web+design+logo&sort=recency")
+    parse_rss("Upwork ads", "https://www.upwork.com/ab/feed/jobs/rss?q=facebook+instagram+ads&sort=recency")
+    parse_rss("Upwork email", "https://www.upwork.com/ab/feed/jobs/rss?q=email+marketing+newsletter&sort=recency")
 
-    # Reddit
-    parse_reddit()
-
-    # Telegram каналы
+    # ===== TELEGRAM =====
     parse_telegram_channels()
 
-    logger.info("Парсинг завершён.")
+    logger.info("Парсинг завершено.")
 
 if __name__ == "__main__":
-    logger.info("Парсер лидов запущен.")
+    logger.info("Парсер запущено.")
     run_all_parsers()
     schedule.every(CHECK_INTERVAL_MINUTES).minutes.do(run_all_parsers)
     while True:
